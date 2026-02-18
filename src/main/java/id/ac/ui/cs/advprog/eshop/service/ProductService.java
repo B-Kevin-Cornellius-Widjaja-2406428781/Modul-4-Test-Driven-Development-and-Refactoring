@@ -1,17 +1,18 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
 import java.util.List;
 
+import id.ac.ui.cs.advprog.eshop.model.Product;
+
 public interface ProductService {
-    public Product create(Product product);
+    Product create(Product product);
 
-    public List<Product> findAll();
+    List<Product> findAll();
 
-    public Product findById(String id);
+    Product findById(String productId);
 
-    public Product update(String id, Product product);
+    Product update(String productId, Product product);
 
-    public Product deleteById(String id);
+    Product deleteById(String productId);
 
 }
