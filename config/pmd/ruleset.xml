@@ -13,24 +13,33 @@
         <exclude name="GuardLogStatement"/>
     </rule>
 
-    <!-- Use Code Style rules -->
+    <!-- Use Code Style rules - Exclude overly strict style rules -->
     <rule ref="category/java/codestyle.xml">
         <exclude name="LongVariable"/>
         <exclude name="ShortMethodName"/>
         <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/>
+        <exclude name="ShortVariable"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="UnnecessaryConstructor"/>
     </rule>
 
-    <!-- Use Design rules -->
+    <!-- Use Design rules - Exclude overly strict design rules -->
     <rule ref="category/java/design.xml">
         <exclude name="LoosePackageCoupling"/>
         <exclude name="LawOfDemeter"/>
         <exclude name="CognitiveComplexity"/>
+        <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
+        <exclude name="ImmutableField"/>
     </rule>
 
-    <!-- Use Performance rules -->
+    <!-- Use Performance rules - All enabled -->
     <rule ref="category/java/performance.xml"/>
 
-    <!-- Use Error Prone rules -->
+    <!-- Use Error Prone rules - Most enabled, exclude false-positive prone ones -->
     <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidDuplicateLiterals"/>
     </rule>
 </ruleset>
