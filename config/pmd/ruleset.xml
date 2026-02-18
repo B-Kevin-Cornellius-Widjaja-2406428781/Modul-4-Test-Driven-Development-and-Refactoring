@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="PMD Ruleset"
+         xmlns="http://pmd.sf.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/2.0.0
+         http://pmd.sf.net/ruleset_2_0_0.xsd">
+    <description>PMD Ruleset for eshop project</description>
+
+    <!-- Use Best Practices rules -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+        <exclude name="JUnitTestsShouldIncludeAssert"/>
+        <exclude name="GuardLogStatement"/>
+    </rule>
+
+    <!-- Use Code Style rules -->
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="LongVariable"/>
+        <exclude name="ShortMethodName"/>
+        <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/>
+    </rule>
+
+    <!-- Use Design rules -->
+    <rule ref="category/java/design.xml">
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="CognitiveComplexity"/>
+    </rule>
+
+    <!-- Use Performance rules -->
+    <rule ref="category/java/performance.xml"/>
+
+    <!-- Use Error Prone rules -->
+    <rule ref="category/java/errorprone.xml">
+    </rule>
+</ruleset>
