@@ -1,25 +1,13 @@
-# Reflection 1
+# Reflection Module 02
 
-Setelah menyelesaikan fitur untuk membuat, melihat, edit, dan delete produk dalam struktur aplikasi yang dibagi menjadi 4 bagian (repository, service, controller, dan model), saya merasa aplikasi menjadi lebih terorganisir dan mudah dipahami. Setiap bagian memiliki tanggung jawab yang jelas dan saling terhubung dengan yang lain. 
+## Reflection 1:
 
-Bagian model berfungsi untuk mendefinisikan struktur data yang akan digunakan dalam aplikasi, sedangkan bagian repository berfungsi untuk menghubungkan model dengan database, bagian service berfungsi untuk mengelola logika bisnis, dan bagian controller berfungsi untuk mengelola permintaan dari user.
+Isu terkait `Utility Class Violation` dan `Class With Private Constructor Should Be Final` muncul pada kelas `EshopApplication`. PMD mendeteksi kelas tersebut hanya memiliki metode statis dan private constructor, sehingga menyarankan penggunaan modifier final. Namun, karena Spring Boot melarang kelas utama aplikasi bersifat final, saya menerapkan strategi untuk membiarkan kelas tersebut tidak bersifat final. Saya menyelesaikan konflik ini dengan menggunakan anotasi `@SuppressWarnings` untuk aturan PMD yang relevan, sehingga kualitas kode tetap terjaga tanpa melanggar ketentuan yang dibutuhkan oleh framework.
 
-Pengerjaan setiap fitur dengan branch github yang berbeda membiasakan saya untuk bekerja dengan git dan github dengan lebih efektif, dan memudahkan saya untuk mengelola kode dengan lebih terstruktur.
+Perbaikan kode juga dilakukan pada bagian `Redundant Access Modifiers` di dalam interface `ProductService`. Dalam bahasa Java, semua metode dalam sebuah interface secara otomatis bersifat public, sehingga penulisan kata kunci public secara eksplisit dianggap redundan oleh PMD. Strategi perbaikan yang saya ambil adalah menghapus semua modifier akses tersebut pada setiap deklarasi metode. Hal ini bertujuan untuk menciptakan kode yang lebih bersih, ringkas, dan mematuhi konvensi penulisan Java modern yang menghindari sintaks yang tidak perlu.
 
-Membaca kode yang telah saya buat, beberapa bagian kode masih memerlukan peningkatan, misalnya validasi input data yang lebih rapi dan detail, juga memberikan popup alert ketika berhasil atau gagal melakukan operasi CRUD. Terlebih lagi, dibutuhkan juga testing untuk memastikan bahwa aplikasi bekerja dengan benar.
+Masalah lain yang muncul saat proses CI adalah kegagalan pengujian akibat mismatch pada penamaan file yang disebabkan oleh perbedaan konfigurasi `ignorecase` pada Git. Di lingkungan lokal, Git dikonfigurasi untuk mengabaikan perbedaan huruf kapital (case-insensitive), namun pada workflow GitHub Actions yang berbasis Linux, sistem bersifat case-sensitive. Hal ini menyebabkan file tidak ditemukan saat pengujian berjalan. Strategi penyelesaiannya adalah dengan melakukan perintah `git mv` untuk mengubah nama file secara eksplisit dari format lama ke format baru yang benar, guna memastikan konsistensi penamaan.
 
----
+Isu terakhir yang ditangani mencakup aspek Security and Compliance pada repositori dan alur CI/CD. Berdasarkan rekomendasi OSSF Scorecard, saya mengidentifikasi bahwa penggunaan versi action pada GitHub Workflows (seperti @v4) memiliki risiko keamanan karena label versi tersebut bersifat mutable (dapat berubah). Strategi penyelesaiannya adalah dengan mengganti referensi versi tersebut menggunakan commit SHA yang bersifat immutable. Selain itu, saya melengkapi repositori dengan file `SECURITY.md` dan `LICENSE` untuk memastikan proyek memenuhi standar dokumentasi dan keamanan yang profesional.
 
-# Reflection 2
-
-1. Setelah menulis unit test, saya merasa lebih yakin dan percaya diri dengan kebenaran kode yang telah saya buat. Unit test berfungsi sebagai jaring pengaman yang dapat menangkap bug sejak awal dan memastikan bahwa setiap komponen bekerja sesuai dengan yang diharapkan.
-
-   Menurut saya, tidak ada jumlah pasti berapa unit test yang harus dibuat dalam satu class. Yang penting adalah setiap method publik memiliki test yang mencakup skenario-skenario yang bermakna, seperti kondisi normal, edge cases, dan kondisi error. Jumlah test sebaiknya disesuaikan dengan kompleksitas method yang diuji.
-
-   Untuk memastikan unit test sudah cukup, kita bisa menggunakan metrik code coverage yang mengukur seberapa banyak kode sumber yang dieksekusi selama pengujian. Metrik ini membantu kita melihat bagian kode mana yang belum tercover oleh test. Namun, meskipun kita mencapai 100% code coverage, bukan berarti kode kita bebas dari bug. Coverage hanya menunjukkan bahwa setiap baris kode pernah dijalankan, tapi tidak menjamin bahwa semua kemungkinan input atau edge case sudah diuji. Bug masih bisa tersembunyi melalui kesalahan logika atau kondisi yang tidak terduga.
-
-2. Jika saya membuat class functional test baru dengan setup procedures dan instance variables yang sama seperti CreateProductFunctionalTest.java, menurut saya hal tersebut akan mengurangi kualitas kode karena terjadi duplikasi. 
-
-   Masalah clean code yang teridentifikasi adalah pelanggaran prinsip DRY (Don't Repeat Yourself). Field seperti serverPort, testBaseUrl, dan baseUrl akan diulang di setiap class test. Method setup dengan anotasi BeforeEach juga akan diduplikasi. Hal ini sangat tidak efisien dan tidak sesuai dengan prinsip clean code.
-
-   Untuk memperbaiki masalah ini, saya menyarankan pembuatan base class yang berisi semua setup procedures dan instance variables yang sama. Class-class functional test lainnya dapat melakukan extends dari base class tersebut. Dengan pendekatan ini, duplikasi kode berkurang, maintenance menjadi lebih mudah, dan jika ada perubahan cukup dilakukan di satu tempat saja.
+## Reflection 2:
