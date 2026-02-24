@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,11 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
+    private boolean isProductNameValid(Product product) {
+        String name = product.getProductName();
+        return Objects.nonNull(name) && !name.isBlank();
+    }
+
     @GetMapping("/create")
     public String createProductPage(Model model) {
         Product product = new Product();
@@ -32,7 +38,7 @@ public class ProductController {
     @PostMapping("/create")
     public String createProductPost(@ModelAttribute Product product, Model model,
             RedirectAttributes redirectAttributes) {
-        if (product.getProductName() == null || product.getProductName().trim().isEmpty()) {
+        if (!isProductNameValid(product)) {
             model.addAttribute("error", "Nama produk tidak boleh kosong!");
             model.addAttribute("product", product);
             return "createProduct";
@@ -68,7 +74,7 @@ public class ProductController {
     @PostMapping("/edit/{id}")
     public String editProductPost(@PathVariable String id, @ModelAttribute Product product, Model model,
             RedirectAttributes redirectAttributes) {
-        if (product.getProductName() == null || product.getProductName().trim().isEmpty()) {
+        if (!isProductNameValid(product)) {
             model.addAttribute("error", "Nama produk tidak boleh kosong!");
             return editProductPage(id, model, redirectAttributes);
         }

@@ -1,23 +1,30 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.service.ProductService;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.service.ProductService;
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTest {
@@ -60,6 +67,17 @@ class ProductControllerTest {
                 .andExpect(flash().attribute("success", "Produk berhasil dibuat!"));
 
         verify(service, times(1)).create(any(Product.class));
+    }
+
+    @Test
+    void testCreateProductPost_NullName() throws Exception {
+        mockMvc.perform(post("/product/create")
+                .param("productQuantity", "100"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("createProduct"))
+                .andExpect(model().attribute("error", "Nama produk tidak boleh kosong!"));
+
+        verify(service, never()).create(any(Product.class));
     }
 
     @Test
@@ -149,6 +167,19 @@ class ProductControllerTest {
 
         mockMvc.perform(post("/product/edit/test-id-123")
                 .param("productName", "")
+                .param("productQuantity", "100"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("editProduct"))
+                .andExpect(model().attribute("error", "Nama produk tidak boleh kosong!"));
+
+        verify(service, never()).update(any(), any());
+    }
+
+    @Test
+    void testEditProductPost_NullName() throws Exception {
+        when(service.findById("test-id-123")).thenReturn(product);
+
+        mockMvc.perform(post("/product/edit/test-id-123")
                 .param("productQuantity", "100"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("editProduct"))
