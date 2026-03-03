@@ -8,17 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import id.ac.ui.cs.advprog.eshop.model.Car;
-import id.ac.ui.cs.advprog.eshop.repository.CarRepository;
+import id.ac.ui.cs.advprog.eshop.repository.ICarRepository;
 
 @Service
 public class CarServiceImpl implements CarService {
 
     @Autowired
-    private CarRepository carRepository;
+    private ICarRepository carRepository;
 
     @Override
     public Car create(Car car) {
-        // TODO Auto-generated method stub
         carRepository.create(car);
         return car;
     }
@@ -33,19 +32,16 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Car findById(String carId) {
-        Car car = carRepository.findById(carId);
-        return car;
+        return carRepository.findById(carId);
     }
 
     @Override
     public void update(String carId, Car car) {
-        // TODO Auto-generated method stub
         carRepository.update(carId, car);
     }
 
     @Override
     public void deleteCarById(String carId) {
-        // TODO Auto-generated method stub
         carRepository.delete(carId);
     }
 }

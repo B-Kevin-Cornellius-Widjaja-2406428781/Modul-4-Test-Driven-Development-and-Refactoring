@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
+import id.ac.ui.cs.advprog.eshop.repository.IProductRepository;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
-    private ProductRepository productRepository;
+    private IProductRepository productRepository;
 
     @Override
     public Product create(Product product) {
@@ -43,5 +43,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product deleteById(String id) {
         return productRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean isProductValid(Product product) {
+        return getValidationError(product) == null;
+    }
+
+    @Override
+    public String getValidationError(Product product) {
+        String name = product.getProductName();
+        if (name == null || name.isBlank()) {
+            return "Nama produk tidak boleh kosong!";
+        }
+        if (product.getProductQuantity() < 0) {
+            return "Jumlah produk tidak boleh negatif!";
+        }
+        return null;
     }
 }
