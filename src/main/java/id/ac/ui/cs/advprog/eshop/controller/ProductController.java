@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import id.ac.ui.cs.advprog.eshop.exception.InvalidProductException;
 import id.ac.ui.cs.advprog.eshop.model.Product;
 import id.ac.ui.cs.advprog.eshop.service.ProductService;
 
@@ -32,13 +33,13 @@ public class ProductController {
     @PostMapping("/create")
     public String createProductPost(@ModelAttribute Product product, Model model,
             RedirectAttributes redirectAttributes) {
-        String error = service.getValidationError(product);
-        if (error != null) {
-            model.addAttribute("error", error);
+        try {
+            service.create(product);
+        } catch (InvalidProductException e) {
+            model.addAttribute("error", e.getMessage());
             model.addAttribute("product", product);
             return "createProduct";
         }
-        service.create(product);
         redirectAttributes.addFlashAttribute("success", "Produk berhasil dibuat!");
         return "redirect:list";
     }
@@ -64,12 +65,12 @@ public class ProductController {
     @PostMapping("/edit/{id}")
     public String editProductPost(@PathVariable String id, @ModelAttribute Product product, Model model,
             RedirectAttributes redirectAttributes) {
-        String error = service.getValidationError(product);
-        if (error != null) {
-            model.addAttribute("error", error);
-            return editProductPage(id, model, redirectAttributes);
+        try {
+            service.update(id, product);
+        } catch (InvalidProductException e) {
+            model.addAttribute("error", e.getMessage());
+            return "editProduct";
         }
-        service.update(id, product);
         redirectAttributes.addFlashAttribute("success", "Produk berhasil diupdate!");
         return "redirect:/product/list";
     }

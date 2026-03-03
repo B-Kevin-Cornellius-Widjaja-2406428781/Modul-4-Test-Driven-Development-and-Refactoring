@@ -14,8 +14,4 @@ public interface ProductService {
     Product update(String productId, Product product);
 
     Product deleteById(String productId);
-
-    boolean isProductValid(Product product);
-
-    String getValidationError(Product product);
 }
