@@ -1,19 +1,28 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import id.ac.ui.cs.advprog.eshop.exception.InvalidProductException;
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -45,6 +54,35 @@ class ProductServiceImplTest {
         assertNotNull(result);
         assertEquals("Sampo Cap Bambang", result.getProductName());
         verify(productRepository, times(1)).create(product);
+    }
+
+    @Test
+    void testCreate_NullName() {
+        Product invalidProduct = new Product();
+        invalidProduct.setProductQuantity(10);
+
+        assertThrows(InvalidProductException.class, () -> productService.create(invalidProduct));
+        verify(productRepository, never()).create(any());
+    }
+
+    @Test
+    void testCreate_EmptyName() {
+        Product invalidProduct = new Product();
+        invalidProduct.setProductName("");
+        invalidProduct.setProductQuantity(10);
+
+        assertThrows(InvalidProductException.class, () -> productService.create(invalidProduct));
+        verify(productRepository, never()).create(any());
+    }
+
+    @Test
+    void testCreate_NegativeQuantity() {
+        Product invalidProduct = new Product();
+        invalidProduct.setProductName("Valid Name");
+        invalidProduct.setProductQuantity(-1);
+
+        assertThrows(InvalidProductException.class, () -> productService.create(invalidProduct));
+        verify(productRepository, never()).create(any());
     }
 
     // FIND ALL TESTS
@@ -132,6 +170,27 @@ class ProductServiceImplTest {
 
         assertNull(result);
         verify(productRepository, times(1)).update("non-existent-id", updatedProduct);
+    }
+
+    @Test
+    void testUpdate_NullName() {
+        Product invalidProduct = new Product();
+        invalidProduct.setProductQuantity(10);
+
+        assertThrows(InvalidProductException.class,
+                () -> productService.update("eb558e9f-1c39-460e-8860-71af6af63bd6", invalidProduct));
+        verify(productRepository, never()).update(any(), any());
+    }
+
+    @Test
+    void testUpdate_NegativeQuantity() {
+        Product invalidProduct = new Product();
+        invalidProduct.setProductName("Valid Name");
+        invalidProduct.setProductQuantity(-5);
+
+        assertThrows(InvalidProductException.class,
+                () -> productService.update("eb558e9f-1c39-460e-8860-71af6af63bd6", invalidProduct));
+        verify(productRepository, never()).update(any(), any());
     }
 
     // DELETE TESTS
