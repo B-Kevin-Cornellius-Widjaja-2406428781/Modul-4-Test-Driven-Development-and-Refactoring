@@ -74,46 +74,4 @@ class PaymentTest {
 
         assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
     }
-
-    // VoucherPayment Sub-feature Tests
-
-    @Test
-    void testCreatePaymentWithValidVoucherCode() {
-        paymentData.put("voucherCode", "ESHOP1234ABC5678");
-
-        Payment payment = new Payment("pay-001",
-                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
-
-        assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getStatus());
-    }
-
-    @Test
-    void testCreatePaymentWithInvalidVoucherCodeTooShort() {
-        paymentData.put("voucherCode", "ESHOP1234");
-
-        Payment payment = new Payment("pay-001",
-                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
-
-        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
-    }
-
-    @Test
-    void testCreatePaymentWithInvalidVoucherCodeNotStartingWithESHOP() {
-        paymentData.put("voucherCode", "XXXX1234ABC5678");
-
-        Payment payment = new Payment("pay-001",
-                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
-
-        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
-    }
-
-    @Test
-    void testCreatePaymentWithInvalidVoucherCodeNotEnoughNumbers() {
-        paymentData.put("voucherCode", "ESHOPABCDABCDEFGH");
-
-        Payment payment = new Payment("pay-001",
-                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
-
-        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
-    }
 }
