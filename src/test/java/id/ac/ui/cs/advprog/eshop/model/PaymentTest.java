@@ -1,14 +1,15 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
-import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
-import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 
 class PaymentTest {
     private Map<String, String> paymentData;
@@ -22,7 +23,7 @@ class PaymentTest {
     void testCreatePayment() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", 
+        Payment payment = new Payment("pay-001",
                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
 
         assertEquals("pay-001", payment.getId());
@@ -32,19 +33,19 @@ class PaymentTest {
 
     @Test
     void testCreatePaymentDefaultStatus() {
-        paymentData.put("voucherCode", "ESHOP1234ABC5678");
+        paymentData.put("address", "Jl. Margonda Raya No. 100");
 
-        Payment payment = new Payment("pay-001", 
-                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+        Payment payment = new Payment("pay-001",
+                PaymentMethod.CASH_ON_DELIVERY.getValue(), paymentData);
 
-        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+        assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
     }
 
     @Test
     void testSetStatusToSuccess() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", 
+        Payment payment = new Payment("pay-001",
                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
         payment.setStatus(PaymentStatus.SUCCESS.getValue());
 
@@ -55,7 +56,7 @@ class PaymentTest {
     void testSetStatusToInvalidStatus() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", 
+        Payment payment = new Payment("pay-001",
                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -67,10 +68,52 @@ class PaymentTest {
     void testSetStatusToPending() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", 
+        Payment payment = new Payment("pay-001",
                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
         payment.setStatus(PaymentStatus.PENDING.getValue());
 
         assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
+    }
+
+    // VoucherPayment Sub-feature Tests
+
+    @Test
+    void testCreatePaymentWithValidVoucherCode() {
+        paymentData.put("voucherCode", "ESHOP1234ABC5678");
+
+        Payment payment = new Payment("pay-001",
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+
+        assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getStatus());
+    }
+
+    @Test
+    void testCreatePaymentWithInvalidVoucherCodeTooShort() {
+        paymentData.put("voucherCode", "ESHOP1234");
+
+        Payment payment = new Payment("pay-001",
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+    }
+
+    @Test
+    void testCreatePaymentWithInvalidVoucherCodeNotStartingWithESHOP() {
+        paymentData.put("voucherCode", "XXXX1234ABC5678");
+
+        Payment payment = new Payment("pay-001",
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+    }
+
+    @Test
+    void testCreatePaymentWithInvalidVoucherCodeNotEnoughNumbers() {
+        paymentData.put("voucherCode", "ESHOPABCDABCDEFGH");
+
+        Payment payment = new Payment("pay-001",
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
     }
 }
