@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,10 +22,11 @@ class PaymentTest {
     void testCreatePayment() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", "VOUCHER_CODE", paymentData);
+        Payment payment = new Payment("pay-001", 
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
 
         assertEquals("pay-001", payment.getId());
-        assertEquals("VOUCHER_CODE", payment.getMethod());
+        assertEquals(PaymentMethod.VOUCHER_CODE.getValue(), payment.getMethod());
         assertEquals(paymentData, payment.getPaymentData());
     }
 
@@ -32,7 +34,8 @@ class PaymentTest {
     void testCreatePaymentDefaultStatus() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", "VOUCHER_CODE", paymentData);
+        Payment payment = new Payment("pay-001", 
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
     }
@@ -41,7 +44,8 @@ class PaymentTest {
     void testSetStatusToSuccess() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", "VOUCHER_CODE", paymentData);
+        Payment payment = new Payment("pay-001", 
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
         payment.setStatus(PaymentStatus.SUCCESS.getValue());
 
         assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getStatus());
@@ -51,7 +55,8 @@ class PaymentTest {
     void testSetStatusToInvalidStatus() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", "VOUCHER_CODE", paymentData);
+        Payment payment = new Payment("pay-001", 
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
 
         assertThrows(IllegalArgumentException.class, () -> {
             payment.setStatus("MEOW");
@@ -62,7 +67,8 @@ class PaymentTest {
     void testSetStatusToPending() {
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        Payment payment = new Payment("pay-001", "VOUCHER_CODE", paymentData);
+        Payment payment = new Payment("pay-001", 
+                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
         payment.setStatus(PaymentStatus.PENDING.getValue());
 
         assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
