@@ -12,10 +12,16 @@ public class Payment {
     Map<String, String> paymentData;
 
     public Payment(String id, String method, Map<String, String> paymentData) {
-        // TODO: Implement constructor logic
+        this.id = id;
+        this.method = method;
+        this.paymentData = paymentData;
+        this.status = "REJECTED";
     }
 
     public void setStatus(String status) {
-        // TODO: Implement status validation
+        if (!"SUCCESS".equals(status) && !"REJECTED".equals(status) && !"PENDING".equals(status)) {
+            throw new IllegalArgumentException();
+        }
+        this.status = status;
     }
 }

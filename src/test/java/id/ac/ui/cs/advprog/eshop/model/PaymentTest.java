@@ -56,4 +56,14 @@ class PaymentTest {
             payment.setStatus("MEOW");
         });
     }
+
+    @Test
+    void testSetStatusToPending() {
+        paymentData.put("voucherCode", "ESHOP1234ABC5678");
+
+        Payment payment = new Payment("pay-001", "VOUCHER_CODE", paymentData);
+        payment.setStatus("PENDING");
+
+        assertEquals("PENDING", payment.getStatus());
+    }
 }
