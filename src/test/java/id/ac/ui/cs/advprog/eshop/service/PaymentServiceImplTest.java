@@ -20,11 +20,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.repository.OrderRepository;
 import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +37,9 @@ public class PaymentServiceImplTest {
 
         @Mock
         PaymentRepository paymentRepository;
+
+        @Mock
+        OrderRepository orderRepository;
 
         private Order order;
         private Map<String, String> paymentData;
@@ -70,39 +75,43 @@ public class PaymentServiceImplTest {
 
         @Test
         void testSetStatusToSuccess() {
-                Payment payment = new Payment("pay-001",
+                Payment payment = new Payment("13652556-012a-4c07-b546-54eb1396d79b",
                                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
                 payment.setStatus(PaymentStatus.PENDING.getValue());
 
-                Payment updatedPayment = new Payment("pay-001",
+                Payment updatedPayment = new Payment("13652556-012a-4c07-b546-54eb1396d79b",
                                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
                 updatedPayment.setStatus(PaymentStatus.SUCCESS.getValue());
 
-                doReturn(payment).when(paymentRepository).save(any(Payment.class));
+                doReturn(order).when(orderRepository).findById(order.getId());
+                doReturn(updatedPayment).when(paymentRepository).save(any(Payment.class));
 
                 Payment result = paymentService.setStatus(payment,
                                 PaymentStatus.SUCCESS.getValue());
 
                 verify(paymentRepository, times(1)).save(any(Payment.class));
+                verify(orderRepository, times(1)).save(any(Order.class));
                 assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
         }
 
         @Test
         void testSetStatusToRejected() {
-                Payment payment = new Payment("pay-001",
+                Payment payment = new Payment("13652556-012a-4c07-b546-54eb1396d79b",
                                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
                 payment.setStatus(PaymentStatus.PENDING.getValue());
 
-                Payment updatedPayment = new Payment("pay-001",
+                Payment updatedPayment = new Payment("13652556-012a-4c07-b546-54eb1396d79b",
                                 PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
                 updatedPayment.setStatus(PaymentStatus.REJECTED.getValue());
 
-                doReturn(payment).when(paymentRepository).save(any(Payment.class));
+                doReturn(order).when(orderRepository).findById(order.getId());
+                doReturn(updatedPayment).when(paymentRepository).save(any(Payment.class));
 
                 Payment result = paymentService.setStatus(payment,
                                 PaymentStatus.REJECTED.getValue());
 
                 verify(paymentRepository, times(1)).save(any(Payment.class));
+                verify(orderRepository, times(1)).save(any(Order.class));
                 assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
         }
 
