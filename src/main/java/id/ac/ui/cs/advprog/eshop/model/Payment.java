@@ -20,7 +20,45 @@ public class Payment {
         this.id = id;
         this.method = method;
         this.paymentData = paymentData;
-        this.status = PaymentStatus.REJECTED.getValue();
+
+        // Validate voucher code for VOUCHER_CODE payment method
+        if (PaymentMethod.VOUCHER_CODE.getValue().equals(method)) {
+            this.status = validateVoucherCode(paymentData)
+                    ? PaymentStatus.SUCCESS.getValue()
+                    : PaymentStatus.REJECTED.getValue();
+        } else {
+            this.status = PaymentStatus.PENDING.getValue();
+        }
+    }
+
+    private boolean validateVoucherCode(Map<String, String> paymentData) {
+        if (paymentData == null) {
+            return false;
+        }
+
+        String voucherCode = paymentData.get("voucherCode");
+        if (voucherCode == null) {
+            return false;
+        }
+
+        // Rule 1: Must be 16 characters long
+        if (voucherCode.length() != 16) {
+            return false;
+        }
+
+        // Rule 2: Must start with "ESHOP"
+        if (!voucherCode.startsWith("ESHOP")) {
+            return false;
+        }
+
+        // Rule 3: Must contain 8 numerical characters
+        int numericCount = 0;
+        for (char c : voucherCode.toCharArray()) {
+            if (Character.isDigit(c)) {
+                numericCount++;
+            }
+        }
+        return numericCount == 8;
     }
 
     public void setStatus(String status) {
