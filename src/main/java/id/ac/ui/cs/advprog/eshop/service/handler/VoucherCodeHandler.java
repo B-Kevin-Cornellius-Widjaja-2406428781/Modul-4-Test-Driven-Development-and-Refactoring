@@ -43,9 +43,8 @@ public class VoucherCodeHandler implements PaymentMethodHandler {
 
     @Override
     public String getInitialStatus() {
-        // Voucher code: validated -> SUCCESS if valid, REJECTED if invalid
-        // Status is determined after validation in service layer
-        return PaymentStatus.PENDING.getValue();
+        // Voucher code: validated -> SUCCESS if valid
+        return PaymentStatus.SUCCESS.getValue();
     }
 
     @Override

@@ -85,6 +85,6 @@ class VoucherCodeHandlerTest {
 
     @Test
     void testGetInitialStatus() {
-        assertEquals("PENDING", voucherCodeHandler.getInitialStatus());
+        assertEquals("SUCCESS", voucherCodeHandler.getInitialStatus());
     }
 }

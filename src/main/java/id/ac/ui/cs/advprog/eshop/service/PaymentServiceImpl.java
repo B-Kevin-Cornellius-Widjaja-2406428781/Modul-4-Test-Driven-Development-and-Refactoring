@@ -48,7 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
         
         if (handler != null) {
             if (handler.validate(paymentData)) {
-                payment.setStatus(PaymentStatus.SUCCESS.getValue());
+                payment.setStatus(handler.getInitialStatus());
             } else {
                 payment.setStatus(PaymentStatus.REJECTED.getValue());
             }
