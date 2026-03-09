@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 
 @Component
@@ -45,5 +46,10 @@ public class VoucherCodeHandler implements PaymentMethodHandler {
         // Voucher code: validated -> SUCCESS if valid, REJECTED if invalid
         // Status is determined after validation in service layer
         return PaymentStatus.PENDING.getValue();
+    }
+
+    @Override
+    public PaymentMethod getPaymentMethod() {
+        return PaymentMethod.VOUCHER_CODE;
     }
 }
