@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.eshop.model;
 
 import java.util.Map;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import lombok.Getter;
 
 @Getter
@@ -15,11 +16,11 @@ public class Payment {
         this.id = id;
         this.method = method;
         this.paymentData = paymentData;
-        this.status = "REJECTED";
+        this.status = PaymentStatus.REJECTED.getValue();
     }
 
     public void setStatus(String status) {
-        if (!"SUCCESS".equals(status) && !"REJECTED".equals(status) && !"PENDING".equals(status)) {
+        if (!PaymentStatus.contains(status)) {
             throw new IllegalArgumentException();
         }
         this.status = status;
