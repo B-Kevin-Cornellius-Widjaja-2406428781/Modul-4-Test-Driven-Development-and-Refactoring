@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import id.ac.ui.cs.advprog.eshop.exception.InvalidProductException;
 import id.ac.ui.cs.advprog.eshop.model.Product;
 import id.ac.ui.cs.advprog.eshop.service.ProductService;
 
@@ -71,37 +71,40 @@ class ProductControllerTest {
 
     @Test
     void testCreateProductPost_NullName() throws Exception {
+        when(service.create(any(Product.class)))
+                .thenThrow(new InvalidProductException("Nama produk tidak boleh kosong!"));
+
         mockMvc.perform(post("/product/create")
                 .param("productQuantity", "100"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("createProduct"))
                 .andExpect(model().attribute("error", "Nama produk tidak boleh kosong!"));
-
-        verify(service, never()).create(any(Product.class));
     }
 
     @Test
     void testCreateProductPost_EmptyName() throws Exception {
+        when(service.create(any(Product.class)))
+                .thenThrow(new InvalidProductException("Nama produk tidak boleh kosong!"));
+
         mockMvc.perform(post("/product/create")
                 .param("productName", "")
                 .param("productQuantity", "100"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("createProduct"))
                 .andExpect(model().attribute("error", "Nama produk tidak boleh kosong!"));
-
-        verify(service, never()).create(any(Product.class));
     }
 
     @Test
     void testCreateProductPost_NegativeQuantity() throws Exception {
+        when(service.create(any(Product.class)))
+                .thenThrow(new InvalidProductException("Jumlah produk tidak boleh negatif!"));
+
         mockMvc.perform(post("/product/create")
                 .param("productName", "Valid Name")
                 .param("productQuantity", "-5"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("createProduct"))
                 .andExpect(model().attribute("error", "Jumlah produk tidak boleh negatif!"));
-
-        verify(service, never()).create(any(Product.class));
     }
 
     // LIST PAGE TESTS
@@ -163,6 +166,8 @@ class ProductControllerTest {
 
     @Test
     void testEditProductPost_EmptyName() throws Exception {
+        when(service.update(eq("test-id-123"), any(Product.class)))
+                .thenThrow(new InvalidProductException("Nama produk tidak boleh kosong!"));
         when(service.findById("test-id-123")).thenReturn(product);
 
         mockMvc.perform(post("/product/edit/test-id-123")
@@ -171,12 +176,12 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("editProduct"))
                 .andExpect(model().attribute("error", "Nama produk tidak boleh kosong!"));
-
-        verify(service, never()).update(any(), any());
     }
 
     @Test
     void testEditProductPost_NullName() throws Exception {
+        when(service.update(eq("test-id-123"), any(Product.class)))
+                .thenThrow(new InvalidProductException("Nama produk tidak boleh kosong!"));
         when(service.findById("test-id-123")).thenReturn(product);
 
         mockMvc.perform(post("/product/edit/test-id-123")
@@ -184,12 +189,12 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("editProduct"))
                 .andExpect(model().attribute("error", "Nama produk tidak boleh kosong!"));
-
-        verify(service, never()).update(any(), any());
     }
 
     @Test
     void testEditProductPost_NegativeQuantity() throws Exception {
+        when(service.update(eq("test-id-123"), any(Product.class)))
+                .thenThrow(new InvalidProductException("Jumlah produk tidak boleh negatif!"));
         when(service.findById("test-id-123")).thenReturn(product);
 
         mockMvc.perform(post("/product/edit/test-id-123")
@@ -198,8 +203,6 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("editProduct"))
                 .andExpect(model().attribute("error", "Jumlah produk tidak boleh negatif!"));
-
-        verify(service, never()).update(any(), any());
     }
 
     // DELETE TESTS

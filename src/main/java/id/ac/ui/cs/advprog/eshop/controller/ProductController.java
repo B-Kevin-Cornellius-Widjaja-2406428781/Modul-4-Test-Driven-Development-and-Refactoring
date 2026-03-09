@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import id.ac.ui.cs.advprog.eshop.exception.InvalidProductException;
 import id.ac.ui.cs.advprog.eshop.model.Product;
 import id.ac.ui.cs.advprog.eshop.service.ProductService;
 
@@ -22,11 +22,6 @@ public class ProductController {
 
     @Autowired
     private ProductService service;
-
-    private boolean isProductNameValid(Product product) {
-        String name = product.getProductName();
-        return Objects.nonNull(name) && !name.isBlank();
-    }
 
     @GetMapping("/create")
     public String createProductPage(Model model) {
@@ -38,17 +33,13 @@ public class ProductController {
     @PostMapping("/create")
     public String createProductPost(@ModelAttribute Product product, Model model,
             RedirectAttributes redirectAttributes) {
-        if (!isProductNameValid(product)) {
-            model.addAttribute("error", "Nama produk tidak boleh kosong!");
+        try {
+            service.create(product);
+        } catch (InvalidProductException e) {
+            model.addAttribute("error", e.getMessage());
             model.addAttribute("product", product);
             return "createProduct";
         }
-        if (product.getProductQuantity() < 0) {
-            model.addAttribute("error", "Jumlah produk tidak boleh negatif!");
-            model.addAttribute("product", product);
-            return "createProduct";
-        }
-        service.create(product);
         redirectAttributes.addFlashAttribute("success", "Produk berhasil dibuat!");
         return "redirect:list";
     }
@@ -74,15 +65,12 @@ public class ProductController {
     @PostMapping("/edit/{id}")
     public String editProductPost(@PathVariable String id, @ModelAttribute Product product, Model model,
             RedirectAttributes redirectAttributes) {
-        if (!isProductNameValid(product)) {
-            model.addAttribute("error", "Nama produk tidak boleh kosong!");
-            return editProductPage(id, model, redirectAttributes);
+        try {
+            service.update(id, product);
+        } catch (InvalidProductException e) {
+            model.addAttribute("error", e.getMessage());
+            return "editProduct";
         }
-        if (product.getProductQuantity() < 0) {
-            model.addAttribute("error", "Jumlah produk tidak boleh negatif!");
-            return editProductPage(id, model, redirectAttributes);
-        }
-        service.update(id, product);
         redirectAttributes.addFlashAttribute("success", "Produk berhasil diupdate!");
         return "redirect:/product/list";
     }
