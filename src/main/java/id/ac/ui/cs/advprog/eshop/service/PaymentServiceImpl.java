@@ -46,11 +46,11 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
         String paymentId = order.getId();
         Payment payment = new Payment(paymentId, method, paymentData);
-        
+
         // Find handler for this payment method
         PaymentMethod paymentMethod = PaymentMethod.valueOf(method);
         PaymentMethodHandler handler = handlerMap.get(paymentMethod);
-        
+
         if (handler != null) {
             if (handler.validate(paymentData)) {
                 payment.setStatus(handler.getInitialStatus());
@@ -58,8 +58,30 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setStatus(PaymentStatus.REJECTED.getValue());
             }
         }
-        
-        return paymentRepository.save(payment);
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        // Update Order status based on Payment status
+        updateOrderStatus(savedPayment);
+
+        return savedPayment;
+    }
+
+    private void updateOrderStatus(Payment payment) {
+        Order order = orderRepository.findById(payment.getId());
+        if (order != null) {
+            String orderStatus;
+            if (PaymentStatus.SUCCESS.getValue().equals(payment.getStatus())) {
+                orderStatus = OrderStatus.SUCCESS.getValue();
+            } else if (PaymentStatus.REJECTED.getValue().equals(payment.getStatus())) {
+                orderStatus = OrderStatus.FAILED.getValue();
+            } else {
+                orderStatus = order.getStatus();
+            }
+            Order updatedOrder = new Order(order.getId(), order.getProducts(),
+                    order.getOrderTime(), order.getAuthor(), orderStatus);
+            orderRepository.save(updatedOrder);
+        }
     }
 
     @Override
@@ -68,21 +90,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment savedPayment = paymentRepository.save(payment);
 
         // Update Order status based on Payment status
-        Order order = orderRepository.findById(payment.getId());
-        if (order != null) {
-            String orderStatus;
-            if (PaymentStatus.SUCCESS.getValue().equals(status)) {
-                orderStatus = OrderStatus.SUCCESS.getValue();
-            } else if (PaymentStatus.REJECTED.getValue().equals(status)) {
-                orderStatus = OrderStatus.FAILED.getValue();
-            } else {
-                orderStatus = order.getStatus();
-            }
-            
-            Order updatedOrder = new Order(order.getId(), order.getProducts(), 
-                    order.getOrderTime(), order.getAuthor(), orderStatus);
-            orderRepository.save(updatedOrder);
-        }
+        updateOrderStatus(savedPayment);
 
         return savedPayment;
     }
