@@ -38,7 +38,7 @@
                 <td th:text="${order.id}"></td>
                 <td th:text="${order.author}"></td>
                 <td th:text="${order.status}"></td>
-                <td th:text="${#temporals.format(T(java.time.Instant.ofEpochMilli(order.orderTime)).atZone(T(java.time.ZoneId).systemDefault()).toLocalDateTime(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${order.orderTime}"></td>
                 <td>
                     <a th:href="@{/order/pay/{id}(id=${order.id})}" class="btn btn-primary btn-sm">Pay</a>
                 </td>

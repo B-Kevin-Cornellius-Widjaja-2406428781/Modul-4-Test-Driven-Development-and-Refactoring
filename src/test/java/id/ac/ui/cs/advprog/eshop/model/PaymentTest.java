@@ -74,4 +74,13 @@ class PaymentTest {
 
         assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
     }
+
+    @Test
+    void testCreatePaymentWithInvalidMethod() {
+        paymentData.put("voucherCode", "ESHOP1234ABC5678");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Payment("pay-001", "INVALID_METHOD", paymentData);
+        });
+    }
 }

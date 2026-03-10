@@ -94,6 +94,18 @@ class CarRepositoryTest {
         assertNull(result);
     }
 
+    @Test
+    void testFindById_NotFoundWithExistingCars() {
+        Car car = new Car();
+        car.setCarName("Toyota Avanza");
+        car.setCarColor("Black");
+        car.setCarQuantity(10);
+        carRepository.create(car);
+
+        Car result = carRepository.findById("different-id");
+        assertNull(result);
+    }
+
     // UPDATE TESTS
 
     @Test
@@ -125,7 +137,24 @@ class CarRepositoryTest {
         updatedCar.setCarQuantity(5);
 
         Car result = carRepository.update("non-existent-id", updatedCar);
+        assertNull(result);
+    }
 
+    @Test
+    void testUpdate_NotFoundWithExistingCars() {
+        // Add a car first
+        Car car = new Car();
+        car.setCarName("Toyota Avanza");
+        car.setCarColor("Black");
+        car.setCarQuantity(10);
+        carRepository.create(car);
+
+        Car updatedCar = new Car();
+        updatedCar.setCarName("Honda Jazz");
+        updatedCar.setCarColor("Red");
+        updatedCar.setCarQuantity(5);
+
+        Car result = carRepository.update("different-id", updatedCar);
         assertNull(result);
     }
 

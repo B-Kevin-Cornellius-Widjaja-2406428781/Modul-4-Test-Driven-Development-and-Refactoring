@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,6 +28,9 @@ import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.model.Product;
 import id.ac.ui.cs.advprog.eshop.repository.OrderRepository;
 import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
+import id.ac.ui.cs.advprog.eshop.service.handler.CashOnDeliveryHandler;
+import id.ac.ui.cs.advprog.eshop.service.handler.PaymentMethodHandler;
+import id.ac.ui.cs.advprog.eshop.service.handler.VoucherCodeHandler;
 
 @ExtendWith(MockitoExtension.class)
 public class PaymentServiceImplTest {
@@ -39,6 +43,12 @@ public class PaymentServiceImplTest {
 
         @Mock
         OrderRepository orderRepository;
+
+        @Mock
+        VoucherCodeHandler voucherCodeHandler;
+
+        @Mock
+        CashOnDeliveryHandler cashOnDeliveryHandler;
 
         private Order order;
         private Map<String, String> paymentData;
@@ -154,4 +164,78 @@ public class PaymentServiceImplTest {
                 List<Payment> results = paymentService.getAllPayments();
                 assertEquals(2, results.size());
         }
+
+        @Test
+        void testAddPaymentWithInvalidMethod() {
+                assertThrows(IllegalArgumentException.class, () -> {
+                        paymentService.addPayment(order, "INVALID_METHOD", paymentData);
+                });
+        }
+
+        @Test
+        void testSetStatusWithNullOrder() {
+                Payment payment = new Payment("pay-001",
+                                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+                payment.setStatus(PaymentStatus.SUCCESS.getValue());
+
+                doReturn(null).when(orderRepository).findById("pay-001");
+                doReturn(payment).when(paymentRepository).save(any(Payment.class));
+
+                Payment result = paymentService.setStatus(payment,
+                                PaymentStatus.SUCCESS.getValue());
+
+                assertNotNull(result);
+                verify(orderRepository, times(0)).save(any(Order.class));
+        }
+
+        @Test
+        void testSetStatusToPending() {
+                Payment payment = new Payment("13652556-012a-4c07-b546-54eb1396d79b",
+                                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+                payment.setStatus(PaymentStatus.PENDING.getValue());
+
+                doReturn(order).when(orderRepository).findById(order.getId());
+                doReturn(payment).when(paymentRepository).save(any(Payment.class));
+
+                Payment result = paymentService.setStatus(payment,
+                                PaymentStatus.PENDING.getValue());
+
+                verify(paymentRepository, times(1)).save(any(Payment.class));
+                verify(orderRepository, times(1)).save(any(Order.class));
+                assertEquals(PaymentStatus.PENDING.getValue(), result.getStatus());
+        }
+
+        @Test
+        void testAddPaymentWithHandlerFoundAndValid() {
+                VoucherCodeHandler handler = new VoucherCodeHandler();
+                Map<PaymentMethod, PaymentMethodHandler> handlerMap = new HashMap<>();
+                handlerMap.put(PaymentMethod.VOUCHER_CODE, handler);
+                paymentService.setHandlerMap(handlerMap);
+
+                doAnswer(invocation -> invocation.getArgument(0)).when(paymentRepository).save(any(Payment.class));
+
+                Payment result = paymentService.addPayment(order,
+                                PaymentMethod.VOUCHER_CODE.getValue(), paymentData);
+
+                assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
+        }
+
+        @Test
+        void testAddPaymentWithHandlerFoundButInvalidVoucher() {
+                VoucherCodeHandler handler = new VoucherCodeHandler();
+                Map<PaymentMethod, PaymentMethodHandler> handlerMap = new HashMap<>();
+                handlerMap.put(PaymentMethod.VOUCHER_CODE, handler);
+                paymentService.setHandlerMap(handlerMap);
+
+                Map<String, String> invalidData = new HashMap<>();
+                invalidData.put("voucherCode", "INVALID12345678");
+
+                doAnswer(invocation -> invocation.getArgument(0)).when(paymentRepository).save(any(Payment.class));
+
+                Payment result = paymentService.addPayment(order,
+                                PaymentMethod.VOUCHER_CODE.getValue(), invalidData);
+
+                assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        }
+
 }

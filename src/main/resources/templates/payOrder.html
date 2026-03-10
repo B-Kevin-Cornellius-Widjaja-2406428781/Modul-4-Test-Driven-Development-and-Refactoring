@@ -25,7 +25,7 @@
     <form th:action="@{/order/pay/{id}(id=${order.id})}" th:object="${paymentData}" method="post">
         <div class="form-group">
             <label for="methodSelect">Payment Method</label>
-            <select th:field="*{method}" class="form-control col-4" id="methodSelect" required>
+            <select name="method" class="form-control col-4" id="methodSelect" required>
                 <option value="">Select Payment Method</option>
                 <option value="VOUCHER_CODE">Voucher Code</option>
                 <option value="CASH_ON_DELIVERY">Cash on Delivery</option>
@@ -35,18 +35,18 @@
         <div id="voucherFields" style="display:none;">
             <div class="form-group">
                 <label for="voucherCode">Voucher Code</label>
-                <input th:field="*{paymentData[voucherCode]}" type="text" class="form-control col-4" id="voucherCode" placeholder="Enter voucher code (e.g. ESHOP1234ABC5678)">
+                <input name="voucherCode" type="text" class="form-control col-4" id="voucherCode" placeholder="Enter voucher code (e.g. ESHOP1234ABC5678)">
             </div>
         </div>
 
         <div id="codFields" style="display:none;">
             <div class="form-group">
                 <label for="address">Delivery Address</label>
-                <input th:field="*{paymentData[address]}" type="text" class="form-control col-4" id="address" placeholder="Enter delivery address">
+                <input name="address" type="text" class="form-control col-4" id="address" placeholder="Enter delivery address">
             </div>
             <div class="form-group">
                 <label for="deliveryFee">Delivery Fee</label>
-                <input th:field="*{paymentData[deliveryFee]}" type="text" class="form-control col-4" id="deliveryFee" placeholder="Enter delivery fee">
+                <input name="deliveryFee" type="text" class="form-control col-4" id="deliveryFee" placeholder="Enter delivery fee">
             </div>
         </div>
 

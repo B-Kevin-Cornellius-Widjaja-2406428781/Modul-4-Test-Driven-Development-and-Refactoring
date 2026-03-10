@@ -49,6 +49,34 @@ class VoucherCodeHandlerTest {
     }
 
     @Test
+    void testValidateVoucherCodeNotStartingWithESHOP_16Chars() {
+        paymentData.put("voucherCode", "XXXX1234567890AB");
+
+        assertFalse(voucherCodeHandler.validate(paymentData));
+    }
+
+    @Test
+    void testValidateVoucherCodeNotStartingWithESHOP_Short() {
+        paymentData.put("voucherCode", "XXXS12345678");
+
+        assertFalse(voucherCodeHandler.validate(paymentData));
+    }
+
+    @Test
+    void testValidateVoucherCodeNot8Digits() {
+        paymentData.put("voucherCode", "ESHOP12345678XYZ");
+
+        assertTrue(voucherCodeHandler.validate(paymentData));
+    }
+
+    @Test
+    void testValidateVoucherCodeMoreThan8Digits() {
+        paymentData.put("voucherCode", "ESHOP123456789AB");
+
+        assertFalse(voucherCodeHandler.validate(paymentData));
+    }
+
+    @Test
     void testValidateVoucherCodeNoNumbers() {
         paymentData.put("voucherCode", "ESHOPABCDEFGHIJ");
 

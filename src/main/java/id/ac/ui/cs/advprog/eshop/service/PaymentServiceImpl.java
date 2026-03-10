@@ -37,6 +37,11 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    // For testing purposes
+    public void setHandlerMap(Map<PaymentMethod, PaymentMethodHandler> handlerMap) {
+        this.handlerMap = handlerMap;
+    }
+
     @Override
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
         String paymentId = order.getId();
